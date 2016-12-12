@@ -4,10 +4,9 @@ In the `/js` folder do the following:
 - In your browser, open `http://localhost:3000` and voila!
 
 # Dev Notes
+## Webpack purposes:
+- hot reloading
+- ability to use ES6 to write modular code
 
 # Resources
 - ES6 + webpack demo: https://github.com/rauschma/webpack-es6-demo
-
-Webpack purposes:
-- hot reloading
-- ability to use ES6 to write modular code
