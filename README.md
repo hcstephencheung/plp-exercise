@@ -1,7 +1,7 @@
 # Instructions
 In the `/js` folder do the following:
 - In the root folder, run `npm install`. 
-- Then run `npm run build`. This will spin up a server at `http://localhost:3000`
+- Then run `npm run serve`. This will spin up a server at `http://localhost:3000`
 - In your browser, open `http://localhost:3000` and voila!
 
 # Dev Notes
