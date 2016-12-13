@@ -7,7 +7,8 @@ const productListParser = (productListData) => {
     return productListData.products.map((productData) => {
         return {
             productTitle: productData.name,
-            productPrice: productData.regularPrice
+            productPrice: productData.regularPrice,
+            productSku: productData.sku
         }
     })
 }

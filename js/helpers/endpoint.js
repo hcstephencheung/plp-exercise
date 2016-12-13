@@ -2,9 +2,10 @@ let baseUrl = 'http://www.bestbuy.ca/api/v2/json/';
 
 let category = 'category/';
 let rootCategory = 'Departments';
-let productParam = 'search?product=';
+let productParam = 'product/';
 let productListParam = 'search?categoryid=';
 
+// TODO: should re-factor renderCb to Promise structure
 const fetchData = (renderCb, url) => {
     if (!renderCb) {
         return false;
@@ -37,8 +38,14 @@ const fetchData = (renderCb, url) => {
     return result;
 }
 
-const getProduct = (sku) => {
+const getProduct = (renderCb, sku) => {
+    if (!sku) {
+        return
+    }
 
+    var url = baseUrl + productParam + sku
+
+    return fetchData(renderCb, url)
 }
 
 const getProducts = (renderCb, categoryId) => {
@@ -48,13 +55,13 @@ const getProducts = (renderCb, categoryId) => {
 
     var url = baseUrl + productListParam + categoryId
 
-    return fetchData(renderCb, url);
+    return fetchData(renderCb, url)
 }
 
 const getCategories = (renderCb, level = rootCategory) => {
     var url = baseUrl + category + level
 
-    return fetchData(renderCb, url);
+    return fetchData(renderCb, url)
 }
 
 export {

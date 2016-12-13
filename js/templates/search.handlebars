@@ -12,3 +12,10 @@
         {{> ../partials/product-list}}
     </ul>
 </section>
+
+{{! Should refactor this into a base template, then move modals to base }}
+<div class="js-modal">
+    {{> ../partials/modal-container}}
+
+    <div class="js-product-details-container"> {{! Contents go in here }} </div>
+</div>

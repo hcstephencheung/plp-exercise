@@ -55,7 +55,7 @@
 	
 	var _main = __webpack_require__(4);
 	
-	var _searchUi = __webpack_require__(32);
+	var _searchUi = __webpack_require__(33);
 	
 	// var productListTemplate = require("./templates/product-listing.handlebars");
 	document.addEventListener("DOMContentLoaded", function () {
@@ -9958,7 +9958,8 @@
 	    return productListData.products.map(function (productData) {
 	        return {
 	            productTitle: productData.name,
-	            productPrice: productData.regularPrice
+	            productPrice: productData.regularPrice,
+	            productSku: productData.sku
 	        };
 	    });
 	};
@@ -10006,9 +10007,10 @@
 	
 	var category = 'category/';
 	var rootCategory = 'Departments';
-	var productParam = 'search?product=';
+	var productParam = 'product/';
 	var productListParam = 'search?categoryid=';
 	
+	// TODO: should re-factor renderCb to Promise structure
 	var fetchData = function fetchData(renderCb, url) {
 	    if (!renderCb) {
 	        return false;
@@ -10041,7 +10043,15 @@
 	    return result;
 	};
 	
-	var getProduct = function getProduct(sku) {};
+	var getProduct = function getProduct(renderCb, sku) {
+	    if (!sku) {
+	        return;
+	    }
+	
+	    var url = baseUrl + productParam + sku;
+	
+	    return fetchData(renderCb, url);
+	};
 	
 	var getProducts = function getProducts(renderCb, categoryId) {
 	    if (!categoryId) {
@@ -10079,7 +10089,9 @@
 	    + ((stack1 = container.invokePartial(__webpack_require__(29),depth0,{"name":"../partials/category-list","data":data,"indent":"        ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
 	    + "    </ul>\n</aside>\n\n<section class=\"c-product-list\">\n    <h1> Products </h1>\n\n    <ul class=\"js-product-list\">\n"
 	    + ((stack1 = container.invokePartial(__webpack_require__(30),depth0,{"name":"../partials/product-list","data":data,"indent":"        ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
-	    + "    </ul>\n</section>\n";
+	    + "    </ul>\n</section>\n\n<div class=\"js-modal\">\n"
+	    + ((stack1 = container.invokePartial(__webpack_require__(32),depth0,{"name":"../partials/modal-container","data":data,"indent":"    ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+	    + "\n    <div class=\"js-product-details-container\">  </div>\n</div>\n";
 	},"usePartial":true,"useData":true});
 
 /***/ },
@@ -11311,7 +11323,7 @@
 	    var stack1;
 	
 	  return "    <li> "
-	    + ((stack1 = container.invokePartial(__webpack_require__(31),depth0,{"name":"./product","data":data,"helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+	    + ((stack1 = container.invokePartial(__webpack_require__(31),depth0,{"name":"./product-tile","data":data,"helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
 	    + " </li>\n";
 	},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
 	    var stack1;
@@ -11328,15 +11340,27 @@
 	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
 	    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 	
-	  return "<div class=\"c-product\">\n  <h3> "
+	  return "<div class=\"c-product js-product js-trigger\" data-product="
+	    + alias4(((helper = (helper = helpers.productSku || (depth0 != null ? depth0.productSku : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productSku","hash":{},"data":data}) : helper)))
+	    + ">\n    <h3> "
 	    + alias4(((helper = (helper = helpers.productTitle || (depth0 != null ? depth0.productTitle : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productTitle","hash":{},"data":data}) : helper)))
-	    + " </h3>\n\n  <p> "
+	    + " </h3>\n\n    <p> "
 	    + alias4(((helper = (helper = helpers.productPrice || (depth0 != null ? depth0.productPrice : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productPrice","hash":{},"data":data}) : helper)))
 	    + " </p>\n</div>";
 	},"useData":true});
 
 /***/ },
 /* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(10);
+	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
+	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+	    return "<div class=\"modal\">\n    <div class=\"modal-inner\">\n        <a rel=\"modal:close\">Close</a>\n        <div class=\"modal-content\"></div>\n    </div>\n</div>";
+	},"useData":true});
+
+/***/ },
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -11356,16 +11380,52 @@
 	
 	var _productListParser2 = _interopRequireDefault(_productListParser);
 	
+	var _productDetailsParser = __webpack_require__(34);
+	
+	var _productDetailsParser2 = _interopRequireDefault(_productDetailsParser);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	// Templates
-	
-	
-	// Parsers
 	// Endpoint Connectors
 	var categoryListTemplate = __webpack_require__(29);
+	
+	// Parsers
+	
 	var productListTemplate = __webpack_require__(30);
-	var productTemplate = __webpack_require__(31);
+	var productDetailsTemplate = __webpack_require__(35);
+	
+	// UI Components
+	var VanillaModal = __webpack_require__(36);
+	
+	var initModal = function initModal() {
+	    var modal = new VanillaModal();
+	
+	    $('.js-modal .modal-content').empty();
+	
+	    modal.open('#js-product-details-modal-content');
+	};
+	
+	var buildProductDetails = function buildProductDetails(productDetailsData) {
+	    if (!productDetailsData) {
+	        return;
+	    }
+	
+	    var data = (0, _productDetailsParser2.default)(productDetailsData);
+	    var $container = $('.js-product-details-container');
+	    var renderedTemplate = productDetailsTemplate(data);
+	
+	    if (!renderedTemplate) {
+	        console.log('Search-UI: Product Details Partial render error');
+	        return;
+	    }
+	
+	    // replace modal contents with new content
+	    $container.html(renderedTemplate);
+	
+	    // open modal
+	    initModal();
+	};
 	
 	var buildProductList = function buildProductList(productListData) {
 	    if (!productListData) {
@@ -11375,6 +11435,11 @@
 	    var data = (0, _productListParser2.default)(productListData);
 	    var $container = $('.js-product-list');
 	    var renderedTemplate = productListTemplate({ products: data });
+	
+	    if (!renderedTemplate) {
+	        console.log('Search-UI: Product List Partial render error');
+	        return;
+	    }
 	
 	    $container.html(renderedTemplate);
 	};
@@ -11388,17 +11453,30 @@
 	    var $container = $('.js-category-list');
 	    var renderedTemplate = categoryListTemplate({ categories: data });
 	
+	    if (!renderedTemplate) {
+	        console.log('Search-UI: Category List Partial render error');
+	        return;
+	    }
+	
 	    $container.html(renderedTemplate);
 	};
 	
 	// bind event handlers
+	// delegate events to body so we can pre-initialize handlers before
+	// elements get appended to the page
 	var bindHandlers = function bindHandlers() {
 	    $('body').on('click', '.js-category-link', function (e) {
 	        e.preventDefault();
-	        debugger;
+	
 	        var categoryId = $(this).attr('href');
-	        debugger;
 	        (0, _endpoint.getProducts)(buildProductList, categoryId);
+	    });
+	
+	    $('body').on('click', '.js-product', function (e) {
+	        e.preventDefault();
+	
+	        var sku = $(this).attr('data-product');
+	        (0, _endpoint.getProduct)(buildProductDetails, sku);
 	    });
 	};
 	
@@ -11412,6 +11490,438 @@
 	
 	var searchUI = exports.searchUI = uiFunction();
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ },
+/* 34 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var productDetailsParser = function productDetailsParser(productDetailsData) {
+	    if (!productDetailsData) {
+	        // can return something for template to show a loader
+	        return false;
+	    }
+	    return {
+	        productName: productDetailsData.name,
+	        productUrl: productDetailsData.productUrl,
+	        productPrice: productDetailsData.regularPrice,
+	        // most products don't have hi-res images
+	        productImg: productDetailsData.thumbnailImage
+	    };
+	};
+	
+	exports.default = productDetailsParser;
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Handlebars = __webpack_require__(10);
+	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
+	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+	    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+	
+	  return "<div id=\"js-product-details-modal-content\" class=\"c-product-details modal-hider\">\n    <h3> "
+	    + alias4(((helper = (helper = helpers.productName || (depth0 != null ? depth0.productName : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productName","hash":{},"data":data}) : helper)))
+	    + " </h3>\n\n    <a href=\""
+	    + alias4(((helper = (helper = helpers.productUrl || (depth0 != null ? depth0.productUrl : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productUrl","hash":{},"data":data}) : helper)))
+	    + "\">\n        <img src=\""
+	    + alias4(((helper = (helper = helpers.productImg || (depth0 != null ? depth0.productImg : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productImg","hash":{},"data":data}) : helper)))
+	    + "\" alt=\""
+	    + alias4(((helper = (helper = helpers.productName || (depth0 != null ? depth0.productName : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productName","hash":{},"data":data}) : helper)))
+	    + "\"/>\n    </a>\n    \n    <p> "
+	    + alias4(((helper = (helper = helpers.productPrice || (depth0 != null ? depth0.productPrice : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productPrice","hash":{},"data":data}) : helper)))
+	    + " </p>\n</div>";
+	},"useData":true});
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+	  if (true) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports !== "undefined") {
+	    factory(module, exports);
+	  } else {
+	    var mod = {
+	      exports: {}
+	    };
+	    factory(mod, mod.exports);
+	    global.VanillaModal = mod.exports;
+	  }
+	})(this, function (module, exports) {
+	  'use strict';
+	
+	  var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+	    return typeof obj;
+	  } : function (obj) {
+	    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+	  };
+	
+	  (function (global, factory) {
+	    if (true) {
+	      !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    } else if (typeof exports !== "undefined") {
+	      factory(module, exports);
+	    } else {
+	      var mod = {
+	        exports: {}
+	      };
+	      factory(mod, mod.exports);
+	      global.VanillaModal = mod.exports;
+	    }
+	  })(undefined, function (module, exports) {
+	    'use strict';
+	
+	    Object.defineProperty(exports, "__esModule", {
+	      value: true
+	    });
+	
+	    var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
+	      return typeof obj === 'undefined' ? 'undefined' : _typeof2(obj);
+	    } : function (obj) {
+	      return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj === 'undefined' ? 'undefined' : _typeof2(obj);
+	    };
+	
+	    function _classCallCheck(instance, Constructor) {
+	      if (!(instance instanceof Constructor)) {
+	        throw new TypeError("Cannot call a class as a function");
+	      }
+	    }
+	
+	    var _createClass = function () {
+	      function defineProperties(target, props) {
+	        for (var i = 0; i < props.length; i++) {
+	          var descriptor = props[i];
+	          descriptor.enumerable = descriptor.enumerable || false;
+	          descriptor.configurable = true;
+	          if ("value" in descriptor) descriptor.writable = true;
+	          Object.defineProperty(target, descriptor.key, descriptor);
+	        }
+	      }
+	
+	      return function (Constructor, protoProps, staticProps) {
+	        if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	        if (staticProps) defineProperties(Constructor, staticProps);
+	        return Constructor;
+	      };
+	    }();
+	
+	    var VanillaModal = function () {
+	
+	      /**
+	       * @param {Object} [userSettings]
+	       */
+	
+	      function VanillaModal(userSettings) {
+	        _classCallCheck(this, VanillaModal);
+	
+	        this.$$ = {
+	          modal: '.modal',
+	          modalInner: '.modal-inner',
+	          modalContent: '.modal-content',
+	          open: '[rel="modal:open"]',
+	          close: '[rel="modal:close"]',
+	          page: 'body',
+	          class: 'modal-visible',
+	          loadClass: 'vanilla-modal',
+	          clickOutside: true,
+	          closeKeys: [27],
+	          transitions: true,
+	          transitionEnd: null,
+	          onBeforeOpen: null,
+	          onBeforeClose: null,
+	          onOpen: null,
+	          onClose: null
+	        };
+	
+	        this._applyUserSettings(userSettings);
+	        this.error = false;
+	        this.isOpen = false;
+	        this.current = null;
+	        this.open = this._open.bind(this);
+	        this.close = this._close.bind(this);
+	        this.$$.transitionEnd = this._transitionEndVendorSniff();
+	        this.$ = this._setupDomNodes();
+	
+	        if (!this.error) {
+	          this._addLoadedCssClass();
+	          this._events().add();
+	        } else {
+	          console.error('Please fix errors before proceeding.');
+	        }
+	      }
+	
+	      /**
+	       * @param {Object} userSettings
+	       */
+	
+	      _createClass(VanillaModal, [{
+	        key: '_applyUserSettings',
+	        value: function _applyUserSettings(userSettings) {
+	          if ((typeof userSettings === 'undefined' ? 'undefined' : _typeof(userSettings)) === 'object') {
+	            for (var i in userSettings) {
+	              if (userSettings.hasOwnProperty(i)) {
+	                this.$$[i] = userSettings[i];
+	              }
+	            }
+	          }
+	        }
+	      }, {
+	        key: '_transitionEndVendorSniff',
+	        value: function _transitionEndVendorSniff() {
+	          if (this.$$.transitions === false) return;
+	          var el = document.createElement('div');
+	          var transitions = {
+	            'transition': 'transitionend',
+	            'OTransition': 'otransitionend',
+	            'MozTransition': 'transitionend',
+	            'WebkitTransition': 'webkitTransitionEnd'
+	          };
+	          for (var i in transitions) {
+	            if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+	              return transitions[i];
+	            }
+	          }
+	        }
+	      }, {
+	        key: '_getNode',
+	        value: function _getNode(selector, parent) {
+	          var targetNode = parent || document;
+	          var node = targetNode.querySelector(selector);
+	          if (!node) {
+	            this.error = true;
+	            return console.error(selector + ' not found in document.');
+	          }
+	          return node;
+	        }
+	      }, {
+	        key: '_setupDomNodes',
+	        value: function _setupDomNodes() {
+	          var $ = {};
+	          $.modal = this._getNode(this.$$.modal);
+	          $.page = this._getNode(this.$$.page);
+	          $.modalInner = this._getNode(this.$$.modalInner, this.modal);
+	          $.modalContent = this._getNode(this.$$.modalContent, this.modal);
+	          return $;
+	        }
+	      }, {
+	        key: '_addLoadedCssClass',
+	        value: function _addLoadedCssClass() {
+	          this._addClass(this.$.page, this.$$.loadClass);
+	        }
+	      }, {
+	        key: '_addClass',
+	        value: function _addClass(el, className) {
+	          if (el instanceof HTMLElement === false) return;
+	          var cssClasses = el.className.split(' ');
+	          if (cssClasses.indexOf(className) === -1) {
+	            cssClasses.push(className);
+	          }
+	          el.className = cssClasses.join(' ');
+	        }
+	      }, {
+	        key: '_removeClass',
+	        value: function _removeClass(el, className) {
+	          if (el instanceof HTMLElement === false) return;
+	          var cssClasses = el.className.split(' ');
+	          if (cssClasses.indexOf(className) > -1) {
+	            cssClasses.splice(cssClasses.indexOf(className), 1);
+	          }
+	          el.className = cssClasses.join(' ');
+	        }
+	      }, {
+	        key: '_setOpenId',
+	        value: function _setOpenId() {
+	          var id = this.current.id || 'anonymous';
+	          this.$.page.setAttribute('data-current-modal', id);
+	        }
+	      }, {
+	        key: '_removeOpenId',
+	        value: function _removeOpenId() {
+	          this.$.page.removeAttribute('data-current-modal');
+	        }
+	      }, {
+	        key: '_getElementContext',
+	        value: function _getElementContext(e) {
+	          if (e && typeof e.hash === 'string') {
+	            return document.querySelector(e.hash);
+	          } else if (typeof e === 'string') {
+	            return document.querySelector(e);
+	          } else {
+	            return console.error('No selector supplied to open()');
+	          }
+	        }
+	      }, {
+	        key: '_open',
+	        value: function _open(matches, e) {
+	          this._releaseNode();
+	          this.current = this._getElementContext(matches);
+	          if (this.current instanceof HTMLElement === false) return console.error('VanillaModal target must exist on page.');
+	          if (typeof this.$$.onBeforeOpen === 'function') this.$$.onBeforeOpen.call(this, e);
+	          this._captureNode();
+	          this._addClass(this.$.page, this.$$.class);
+	          this._setOpenId();
+	          this.isOpen = true;
+	          if (typeof this.$$.onOpen === 'function') this.$$.onOpen.call(this, e);
+	        }
+	      }, {
+	        key: '_detectTransition',
+	        value: function _detectTransition() {
+	          var css = window.getComputedStyle(this.$.modal, null);
+	          var transitionDuration = ['transitionDuration', 'oTransitionDuration', 'MozTransitionDuration', 'webkitTransitionDuration'];
+	          var hasTransition = transitionDuration.filter(function (i) {
+	            if (typeof css[i] === 'string' && parseFloat(css[i]) > 0) {
+	              return true;
+	            }
+	          });
+	          return hasTransition.length ? true : false;
+	        }
+	      }, {
+	        key: '_close',
+	        value: function _close(e) {
+	          if (this.isOpen === true) {
+	            this.isOpen = false;
+	            if (typeof this.$$.onBeforeClose === 'function') this.$$.onBeforeClose.call(this, e);
+	            this._removeClass(this.$.page, this.$$.class);
+	            var transitions = this._detectTransition();
+	            if (this.$$.transitions && this.$$.transitionEnd && transitions) {
+	              this._closeModalWithTransition(e);
+	            } else {
+	              this._closeModal(e);
+	            }
+	          }
+	        }
+	      }, {
+	        key: '_closeModal',
+	        value: function _closeModal(e) {
+	          this._removeOpenId(this.$.page);
+	          this._releaseNode();
+	          this.isOpen = false;
+	          this.current = null;
+	          if (typeof this.$$.onClose === 'function') this.$$.onClose.call(this, e);
+	        }
+	      }, {
+	        key: '_closeModalWithTransition',
+	        value: function _closeModalWithTransition(e) {
+	          var _closeTransitionHandler = function () {
+	            this.$.modal.removeEventListener(this.$$.transitionEnd, _closeTransitionHandler);
+	            this._closeModal(e);
+	          }.bind(this);
+	          this.$.modal.addEventListener(this.$$.transitionEnd, _closeTransitionHandler);
+	        }
+	      }, {
+	        key: '_captureNode',
+	        value: function _captureNode() {
+	          if (this.current) {
+	            while (this.current.childNodes.length > 0) {
+	              this.$.modalContent.appendChild(this.current.childNodes[0]);
+	            }
+	          }
+	        }
+	      }, {
+	        key: '_releaseNode',
+	        value: function _releaseNode() {
+	          if (this.current) {
+	            while (this.$.modalContent.childNodes.length > 0) {
+	              this.current.appendChild(this.$.modalContent.childNodes[0]);
+	            }
+	          }
+	        }
+	      }, {
+	        key: '_closeKeyHandler',
+	        value: function _closeKeyHandler(e) {
+	          if (Object.prototype.toString.call(this.$$.closeKeys) !== '[object Array]' || this.$$.closeKeys.length === 0) return;
+	          if (this.$$.closeKeys.indexOf(e.which) > -1 && this.isOpen === true) {
+	            e.preventDefault();
+	            this.close(e);
+	          }
+	        }
+	      }, {
+	        key: '_outsideClickHandler',
+	        value: function _outsideClickHandler(e) {
+	          if (this.$$.clickOutside !== true) return;
+	          var node = e.target;
+	          while (node && node != document.body) {
+	            if (node === this.$.modalInner) return;
+	            node = node.parentNode;
+	          }
+	          this.close(e);
+	        }
+	      }, {
+	        key: '_matches',
+	        value: function _matches(e, selector) {
+	          var el = e.target;
+	          var matches = (el.document || el.ownerDocument).querySelectorAll(selector);
+	          for (var i = 0; i < matches.length; i++) {
+	            var child = el;
+	            while (child && child !== document.body) {
+	              if (child === matches[i]) return child;
+	              child = child.parentNode;
+	            }
+	          }
+	          return null;
+	        }
+	      }, {
+	        key: '_delegateOpen',
+	        value: function _delegateOpen(e) {
+	          var matches = this._matches(e, this.$$.open);
+	          if (matches) {
+	            e.preventDefault();
+	            e.delegateTarget = matches;
+	            return this.open(matches, e);
+	          }
+	        }
+	      }, {
+	        key: '_delegateClose',
+	        value: function _delegateClose(e) {
+	          if (this._matches(e, this.$$.close)) {
+	            e.preventDefault();
+	            return this.close(e);
+	          }
+	        }
+	      }, {
+	        key: '_events',
+	        value: function _events() {
+	
+	          var _closeKeyHandler = this._closeKeyHandler.bind(this);
+	          var _outsideClickHandler = this._outsideClickHandler.bind(this);
+	          var _delegateOpen = this._delegateOpen.bind(this);
+	          var _delegateClose = this._delegateClose.bind(this);
+	
+	          var add = function add() {
+	            this.$.modal.addEventListener('click', _outsideClickHandler, false);
+	            document.addEventListener('keydown', _closeKeyHandler, false);
+	            document.addEventListener('click', _delegateOpen, false);
+	            document.addEventListener('click', _delegateClose, false);
+	          };
+	
+	          this.destroy = function () {
+	            this.close();
+	            this.$.modal.removeEventListener('click', _outsideClickHandler);
+	            document.removeEventListener('keydown', _closeKeyHandler);
+	            document.removeEventListener('click', _delegateOpen);
+	            document.removeEventListener('click', _delegateClose);
+	          };
+	
+	          return {
+	            add: add.bind(this)
+	          };
+	        }
+	      }]);
+	
+	      return VanillaModal;
+	    }();
+	
+	    exports.default = VanillaModal;
+	    module.exports = exports['default'];
+	  });
+	});
 
 /***/ }
 /******/ ]);
