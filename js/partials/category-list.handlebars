@@ -1,3 +1,3 @@
-<ul class="c-category-list">
-    <li> {{ categoryName }} </li>
-</ul>
+{{#categories}}
+    <li><a class="js-category-link" href="{{categoryLink}}"> {{ categoryName }} </a></li>
+{{/categories}}

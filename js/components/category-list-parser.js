@@ -1,16 +1,17 @@
 import { getCategories } from '../helpers/endpoint.js'
 
-const categoryListParser = () => {
-    debugger;
-    var categories = getCategories();
+const categoryListParser = (categoryListData) => {
+    if (!categoryListData) {
+        // can return a "loading" key to show a loader
+        return false
+    }
 
-    return categories;
-
-    // return [
-    //     { categoryName: 'WEEE' },
-    //     { categoryName: 'Electronics' },
-    //     { categoryName: 'omg' }
-    // ]
+    return categoryListData.subCategories.map((categoryData) => {
+        return {
+            categoryLink: categoryData.id,
+            categoryName: categoryData.name
+        }
+    })
 }
 
 export default categoryListParser

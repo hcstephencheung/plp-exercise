@@ -1,10 +1,15 @@
-const productListParser = () => {
-    return [
-        { title: "sexy", description: "i'm a genius" },
-        { title: "A TV", description: "a 65 inch tv" },
-        { title: "A Computer", description: "does not come with monitor" },
-        { title: "General Product" }
-    ]
+const productListParser = (productListData) => {
+    if (!productListData) {
+        // can return something for template to show a loader
+        return false
+    }
+
+    return productListData.products.map((productData) => {
+        return {
+            productTitle: productData.name,
+            productPrice: productData.regularPrice
+        }
+    })
 }
 
 export default productListParser

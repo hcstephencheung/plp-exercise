@@ -55,10 +55,14 @@
 	
 	var _main = __webpack_require__(4);
 	
+	var _searchUi = __webpack_require__(32);
+	
+	// var productListTemplate = require("./templates/product-listing.handlebars");
 	document.addEventListener("DOMContentLoaded", function () {
 	    var tmpl = _main.renderedTemplate;
+	
 	    $('.main').html(_main.renderedTemplate);
-	}); // var productListTemplate = require("./templates/product-listing.handlebars");
+	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
@@ -9945,8 +9949,18 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	var productListParser = function productListParser() {
-	    return [{ title: "sexy", description: "i'm a genius" }, { title: "A TV", description: "a 65 inch tv" }, { title: "A Computer", description: "does not come with monitor" }, { title: "General Product" }];
+	var productListParser = function productListParser(productListData) {
+	    if (!productListData) {
+	        // can return something for template to show a loader
+	        return false;
+	    }
+	
+	    return productListData.products.map(function (productData) {
+	        return {
+	            productTitle: productData.name,
+	            productPrice: productData.regularPrice
+	        };
+	    });
 	};
 	
 	exports.default = productListParser;
@@ -9963,17 +9977,18 @@
 	
 	var _endpoint = __webpack_require__(8);
 	
-	var categoryListParser = function categoryListParser() {
-	    debugger;
-	    var categories = (0, _endpoint.getCategories)();
+	var categoryListParser = function categoryListParser(categoryListData) {
+	    if (!categoryListData) {
+	        // can return a "loading" key to show a loader
+	        return false;
+	    }
 	
-	    return categories;
-	
-	    // return [
-	    //     { categoryName: 'WEEE' },
-	    //     { categoryName: 'Electronics' },
-	    //     { categoryName: 'omg' }
-	    // ]
+	    return categoryListData.subCategories.map(function (categoryData) {
+	        return {
+	            categoryLink: categoryData.id,
+	            categoryName: categoryData.name
+	        };
+	    });
 	};
 	
 	exports.default = categoryListParser;
@@ -9992,15 +10007,21 @@
 	var category = 'category/';
 	var rootCategory = 'Departments';
 	var productParam = 'search?product=';
-	var categoryParam = 'search?categoryid=';
+	var productListParam = 'search?categoryid=';
 	
-	var fetchData = function fetchData(url, successCb) {
-	    if (!url) {
+	var fetchData = function fetchData(renderCb, url) {
+	    if (!renderCb) {
 	        return false;
 	    }
 	
-	    debugger;
+	    if (!url) {
+	        console.log('Endpoint.js Error: Url was not provided');
+	        return false;
+	    }
+	
 	    var result;
+	
+	    console.log('Fetching data from ' + url);
 	
 	    $.ajax({
 	        type: 'GET',
@@ -10009,7 +10030,7 @@
 	        success: function success(data, statusCode, xhr) {
 	            var result = data;
 	
-	            successCb();
+	            renderCb(data);
 	        },
 	        error: function error(xhr, statusCode, _error) {
 	            console.log('Endpoint.js Error: Ajax error ' + _error);
@@ -10022,14 +10043,22 @@
 	
 	var getProduct = function getProduct(sku) {};
 	
-	var getProducts = function getProducts(categoryId) {};
+	var getProducts = function getProducts(renderCb, categoryId) {
+	    if (!categoryId) {
+	        return;
+	    }
 	
-	var getCategories = function getCategories() {
-	    var level = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : rootCategory;
+	    var url = baseUrl + productListParam + categoryId;
+	
+	    return fetchData(renderCb, url);
+	};
+	
+	var getCategories = function getCategories(renderCb) {
+	    var level = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : rootCategory;
 	
 	    var url = baseUrl + category + level;
 	
-	    return fetchData(url);
+	    return fetchData(renderCb, url);
 	};
 	
 	exports.getProduct = getProduct;
@@ -10043,22 +10072,14 @@
 
 	var Handlebars = __webpack_require__(10);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
-	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data) {
+	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
 	    var stack1;
 	
-	  return ((stack1 = container.invokePartial(__webpack_require__(29),depth0,{"name":"../partials/category-list","data":data,"indent":"        ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "");
-	},"3":function(container,depth0,helpers,partials,data) {
-	    var stack1;
-	
-	  return ((stack1 = container.invokePartial(__webpack_require__(30),depth0,{"name":"../partials/product-list","data":data,"indent":"        ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "");
-	},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-	    var stack1, alias1=container.lambda, alias2=helpers.blockHelperMissing;
-	
-	  return "<aside>\n    <h1> Cateogires </h1>\n"
-	    + ((stack1 = alias2.call(depth0,alias1((depth0 != null ? depth0.categories : depth0), depth0),{"name":"categories","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-	    + "</aside>\n\n<section class=\"c-product-list\">\n    <h1> Products </h1>\n\n"
-	    + ((stack1 = alias2.call(depth0,alias1((depth0 != null ? depth0.products : depth0), depth0),{"name":"products","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-	    + "</section>\n";
+	  return "<aside>\n    <h1> Categories </h1>\n    <ul class=\"js-category-list c-category-list\">\n"
+	    + ((stack1 = container.invokePartial(__webpack_require__(29),depth0,{"name":"../partials/category-list","data":data,"indent":"        ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+	    + "    </ul>\n</aside>\n\n<section class=\"c-product-list\">\n    <h1> Products </h1>\n\n    <ul class=\"js-product-list\">\n"
+	    + ((stack1 = container.invokePartial(__webpack_require__(30),depth0,{"name":"../partials/product-list","data":data,"indent":"        ","helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+	    + "    </ul>\n</section>\n";
 	},"usePartial":true,"useData":true});
 
 /***/ },
@@ -11263,12 +11284,21 @@
 
 	var Handlebars = __webpack_require__(10);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
-	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-	    var helper;
+	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data) {
+	    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 	
-	  return "<ul class=\"c-category-list\">\n    <li> "
-	    + container.escapeExpression(((helper = (helper = helpers.categoryName || (depth0 != null ? depth0.categoryName : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"categoryName","hash":{},"data":data}) : helper)))
-	    + " </li>\n</ul>";
+	  return "    <li><a class=\"js-category-link\" href=\""
+	    + alias4(((helper = (helper = helpers.categoryLink || (depth0 != null ? depth0.categoryLink : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"categoryLink","hash":{},"data":data}) : helper)))
+	    + "\"> "
+	    + alias4(((helper = (helper = helpers.categoryName || (depth0 != null ? depth0.categoryName : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"categoryName","hash":{},"data":data}) : helper)))
+	    + " </a></li>\n";
+	},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+	    var stack1, helper, options, buffer = "";
+	
+	  stack1 = ((helper = (helper = helpers.categories || (depth0 != null ? depth0.categories : depth0)) != null ? helper : helpers.helperMissing),(options={"name":"categories","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data}),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},options) : helper));
+	  if (!helpers.categories) { stack1 = helpers.blockHelperMissing.call(depth0,stack1,options)}
+	  if (stack1 != null) { buffer += stack1; }
+	  return buffer;
 	},"useData":true});
 
 /***/ },
@@ -11277,12 +11307,16 @@
 
 	var Handlebars = __webpack_require__(10);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
-	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data) {
 	    var stack1;
 	
-	  return "<ul class=\"c-product-list\">\n    <li> "
-	    + ((stack1 = container.invokePartial(__webpack_require__(31),depth0,{"name":"../partials/product","data":data,"helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
-	    + " </li>\n</ul>";
+	  return "    <li> "
+	    + ((stack1 = container.invokePartial(__webpack_require__(31),depth0,{"name":"./product","data":data,"helpers":helpers,"partials":partials,"decorators":container.decorators})) != null ? stack1 : "")
+	    + " </li>\n";
+	},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+	    var stack1;
+	
+	  return ((stack1 = helpers.blockHelperMissing.call(depth0,container.lambda((depth0 != null ? depth0.products : depth0), depth0),{"name":"products","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
 	},"usePartial":true,"useData":true});
 
 /***/ },
@@ -11295,11 +11329,89 @@
 	    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 	
 	  return "<div class=\"c-product\">\n  <h3> "
-	    + alias4(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"title","hash":{},"data":data}) : helper)))
+	    + alias4(((helper = (helper = helpers.productTitle || (depth0 != null ? depth0.productTitle : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productTitle","hash":{},"data":data}) : helper)))
 	    + " </h3>\n\n  <p> "
-	    + alias4(((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"description","hash":{},"data":data}) : helper)))
+	    + alias4(((helper = (helper = helpers.productPrice || (depth0 != null ? depth0.productPrice : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productPrice","hash":{},"data":data}) : helper)))
 	    + " </p>\n</div>";
 	},"useData":true});
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.searchUI = undefined;
+	
+	var _endpoint = __webpack_require__(8);
+	
+	var _categoryListParser = __webpack_require__(7);
+	
+	var _categoryListParser2 = _interopRequireDefault(_categoryListParser);
+	
+	var _productListParser = __webpack_require__(6);
+	
+	var _productListParser2 = _interopRequireDefault(_productListParser);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	// Templates
+	
+	
+	// Parsers
+	// Endpoint Connectors
+	var categoryListTemplate = __webpack_require__(29);
+	var productListTemplate = __webpack_require__(30);
+	var productTemplate = __webpack_require__(31);
+	
+	var buildProductList = function buildProductList(productListData) {
+	    if (!productListData) {
+	        return;
+	    }
+	
+	    var data = (0, _productListParser2.default)(productListData);
+	    var $container = $('.js-product-list');
+	    var renderedTemplate = productListTemplate({ products: data });
+	
+	    $container.html(renderedTemplate);
+	};
+	
+	var buildCategoryList = function buildCategoryList(categoryListData) {
+	    if (!categoryListData) {
+	        return;
+	    }
+	
+	    var data = (0, _categoryListParser2.default)(categoryListData);
+	    var $container = $('.js-category-list');
+	    var renderedTemplate = categoryListTemplate({ categories: data });
+	
+	    $container.html(renderedTemplate);
+	};
+	
+	// bind event handlers
+	var bindHandlers = function bindHandlers() {
+	    $('body').on('click', '.js-category-link', function (e) {
+	        e.preventDefault();
+	        debugger;
+	        var categoryId = $(this).attr('href');
+	        debugger;
+	        (0, _endpoint.getProducts)(buildProductList, categoryId);
+	    });
+	};
+	
+	var uiFunction = function uiFunction() {
+	    $(document).ready(function () {
+	        (0, _endpoint.getCategories)(buildCategoryList);
+	
+	        bindHandlers();
+	    });
+	};
+	
+	var searchUI = exports.searchUI = uiFunction();
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }
 /******/ ]);

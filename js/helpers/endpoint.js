@@ -3,15 +3,21 @@ let baseUrl = 'http://www.bestbuy.ca/api/v2/json/';
 let category = 'category/';
 let rootCategory = 'Departments';
 let productParam = 'search?product=';
-let categoryParam = 'search?categoryid=';
+let productListParam = 'search?categoryid=';
 
-const fetchData = (url, successCb) => {
-    if (!url) {
+const fetchData = (renderCb, url) => {
+    if (!renderCb) {
         return false;
     }
 
-    debugger;
+    if (!url) {
+        console.log('Endpoint.js Error: Url was not provided');
+        return false;
+    }
+
     var result;
+
+    console.log('Fetching data from ' + url);
 
     $.ajax({
         type: 'GET',
@@ -20,7 +26,7 @@ const fetchData = (url, successCb) => {
         success: (data, statusCode, xhr) => {
             var result = data;
 
-            successCb()
+            renderCb(data);
         },
         error: (xhr, statusCode, error) => {
             console.log('Endpoint.js Error: Ajax error ' + error);
@@ -35,14 +41,20 @@ const getProduct = (sku) => {
 
 }
 
-const getProducts = (categoryId) => {
+const getProducts = (renderCb, categoryId) => {
+    if (!categoryId) {
+        return
+    }
 
+    var url = baseUrl + productListParam + categoryId
+
+    return fetchData(renderCb, url);
 }
 
-const getCategories = (level = rootCategory) => {
+const getCategories = (renderCb, level = rootCategory) => {
     var url = baseUrl + category + level
 
-    return fetchData(url);
+    return fetchData(renderCb, url);
 }
 
 export {

@@ -1,14 +1,14 @@
 <aside>
-    <h1> Cateogires </h1>
-    {{#categories}}
+    <h1> Categories </h1>
+    <ul class="js-category-list c-category-list">
         {{> ../partials/category-list}}
-    {{/categories}}
+    </ul>
 </aside>
 
 <section class="c-product-list">
     <h1> Products </h1>
 
-    {{#products}}
+    <ul class="js-product-list">
         {{> ../partials/product-list}}
-    {{/products}}
+    </ul>
 </section>
