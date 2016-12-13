@@ -9958,6 +9958,7 @@
 	    return productListData.products.map(function (productData) {
 	        return {
 	            productTitle: productData.name,
+	            productImg: productData.thumbnailImage,
 	            productPrice: productData.regularPrice,
 	            productSku: productData.sku
 	        };
@@ -11344,7 +11345,11 @@
 	    + alias4(((helper = (helper = helpers.productSku || (depth0 != null ? depth0.productSku : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productSku","hash":{},"data":data}) : helper)))
 	    + ">\n    <h3> "
 	    + alias4(((helper = (helper = helpers.productTitle || (depth0 != null ? depth0.productTitle : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productTitle","hash":{},"data":data}) : helper)))
-	    + " </h3>\n\n    <p> "
+	    + " </h3>\n\n    <img src="
+	    + alias4(((helper = (helper = helpers.productImg || (depth0 != null ? depth0.productImg : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productImg","hash":{},"data":data}) : helper)))
+	    + " alt=\""
+	    + alias4(((helper = (helper = helpers.productTitle || (depth0 != null ? depth0.productTitle : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productTitle","hash":{},"data":data}) : helper)))
+	    + "\"/>\n\n    <p> "
 	    + alias4(((helper = (helper = helpers.productPrice || (depth0 != null ? depth0.productPrice : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"productPrice","hash":{},"data":data}) : helper)))
 	    + " </p>\n</div>";
 	},"useData":true});
