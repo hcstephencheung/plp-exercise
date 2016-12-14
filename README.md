@@ -7,7 +7,15 @@ In the `/js` folder do the following:
 # Dev Notes
 ### Known Issues:
 - Fetching data takes a really long time. This is particularly frustrating when opening the modal. I could easily setup a loading icon of some sort to make the perceived performance much better (this relatively easy to do, just need to add loading-state to partials and return isLoading key in the parsers)
-- This PLP looks ugly
+- PLP doesn't look very good. I inherited the styles from the HTML5 boilerplate, but functionality is there
+
+### Tests:
+- I have to be honest, I'm unfamiliar with tests in JS. I could spend a little more time figuring out Mocha/Sinon for Ajax testing, but I've spent a bit too much time on setting up the project structure right. I would have the following testing approach:
+  * create unit tests for each get() in endpoint.js, ensuring each endpoint can be reached and has the right data types and content. This ensures data is coming in as expected from the BE.
+  * create unit tests for parser functions to map 1:1 with context keys used in templates. This ensures templates to render properly.
+  * create unit tests for build functions -ui.js to ensure HTML content is being created via Handlebars with the correct dataset
+  * create a test suite for the aforementioned tests
+  * the final acceptance criteria will still require manual testing since I don't think there is still a good visual testing tool out there consistent enough to simulate user interations
 
 
 ### Webpack purposes:

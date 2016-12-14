@@ -32,6 +32,8 @@ const fetchData = (renderCb, url) => {
         error: (xhr, statusCode, error) => {
             console.log('Endpoint.js Error: Ajax error ' + error);
             var result = error;
+
+            renderCb(null, error);
         }
     });
 
