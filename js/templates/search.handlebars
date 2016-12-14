@@ -1,0 +1,21 @@
+<aside>
+    <h1> Categories </h1>
+    <ul class="js-category-list c-category-list">
+        {{> ../partials/category-list}}
+    </ul>
+</aside>
+
+<section class="c-product-list">
+    <h1> Products </h1>
+
+    <ul class="js-product-list">
+        {{> ../partials/product-list}}
+    </ul>
+</section>
+
+{{! Should refactor this into a base template, then move modals to base }}
+<div class="js-modal">
+    {{> ../partials/modal-container}}
+
+    <div class="js-product-details-container"> {{! Contents go in here }} </div>
+</div>
